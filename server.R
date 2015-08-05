@@ -36,10 +36,10 @@ shinyServer(function(input, output, session) {
         ad_tooltip <- function(x) {
                if (is.null(x))
                        return(NULL)
-               if (is.null(x$ID))
+               if (is.null(x$CPM))
                        return(NULL)
                myData <- isolate(df())
-               ad <- myData[myData$ID == x$ID, ]
+               ad <- myData[myData$CPM == x$CPM, ]
                
                paste0(ad$Targeting, "<br>",
                       ad$Age, " ", ad$Gender, "<br>",
@@ -48,6 +48,7 @@ shinyServer(function(input, output, session) {
         
         # A reactive expression with the ggvis plot
         vis <- reactive({
+                
                 inFile <- input$file
                 if (!is.null(inFile)) {
                         df <- read.csv(inFile$datapath)
@@ -59,6 +60,7 @@ shinyServer(function(input, output, session) {
                 startDate = yday(ymd(as.character(input$dates[1])))
                 endDate = yday(ymd(as.character(input$dates[2])))
                 
+                # update graph
                 df <- df %>%
                 filter(
                         Spend >= input$spend[1] & Spend <= input$spend[2],

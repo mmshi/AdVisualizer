@@ -1,6 +1,7 @@
 library(shiny)
 library(ggvis)
 library(dplyr)
+library(lubridate)
 source('global.r')
 
 shinyServer(function(input, output, session) {
@@ -10,13 +11,14 @@ shinyServer(function(input, output, session) {
                 if(is.null(inFile))
                         return(tbl_df(read.csv("test.csv")))
                 else {
-                        print('it wokred!!!')
                         return(read.csv(inFile$datapath))
                 }
         })
         
         #return data frame of filtered ads
         df <- reactive({
+                startDate = yday(ymd(as.character(input$dates[1])))
+                endDate = yday(ymd(as.character(input$dates[2])))
                 getMyData() %>%
                 filter(
                         Spend >= input$spend[1] & Spend <= input$spend[2],
@@ -24,7 +26,9 @@ shinyServer(function(input, output, session) {
                         CPC >= input$cpc[1] & CPC <= input$cpc[2],
                         CTR >= input$ctr[1] & CTR <= input$ctr[2],
                         CPA >= input$cpa[1] & CPA <= input$cpa[2],
-                        CR >= input$cr[1] & CR <= input$cr[2]
+                        CR >= input$cr[1] & CR <= input$cr[2],
+                        yday(mdy(as.character(Date))) >= startDate & 
+                                yday(mdy(as.character(Date))) <= endDate
                 )
         })
         
@@ -49,9 +53,11 @@ shinyServer(function(input, output, session) {
                         df <- read.csv(inFile$datapath)
                 }
                 else {
-                        print('no file')
                         df <- df
                 }
+                
+                startDate = yday(ymd(as.character(input$dates[1])))
+                endDate = yday(ymd(as.character(input$dates[2])))
                 
                 df <- df %>%
                 filter(
@@ -60,7 +66,9 @@ shinyServer(function(input, output, session) {
                         CPC >= input$cpc[1] & CPC <= input$cpc[2],
                         CTR >= input$ctr[1] & CTR <= input$ctr[2],
                         CPA >= input$cpa[1] & CPA <= input$cpa[2],
-                        CR >= input$cr[1] & CR <= input$cr[2]
+                        CR >= input$cr[1] & CR <= input$cr[2],
+                        yday(mdy(as.character(Date))) >= startDate & 
+                                yday(mdy(as.character(Date))) <= endDate
                 )
                 
                 # Labels for axes
@@ -92,23 +100,23 @@ shinyServer(function(input, output, session) {
         
         # summary table output
         output$num_ads <- renderText({
-                paste("Number of Ads: ", nrow(df())) 
+                paste("Number of Ads: ", format(nrow(df()), big.mark = ",")) 
         })
         output$spend_text <- renderText({ 
                 data <- df()
-                paste("Spend: $", colSums(data[, 2, drop = F]))
+                paste("Spend: $", format(colSums(data[, 2, drop = F]), big.mark = ","))
         })
         output$impressions_text <- renderText({ 
                 data <- df()
-                paste("Impressions: ", colSums(data[, 3, drop = F])) 
+                paste("Impressions: ", format(colSums(data[, 3, drop = F]), big.mark = ",")) 
         })
         output$clicks_text <- renderText({ 
                 data <- df()
-                paste("Clicks: ", colSums(data[, 5, drop = F])) 
+                paste("Clicks: ", format(colSums(data[, 5, drop = F]), big.mark = ",")) 
         })
         output$acquisitions_text <- renderText({ 
                 data <- df()
-                paste("Acquisitions: ", colSums(data[, 8, drop = F])) 
+                paste("Acquisitions: ", format(colSums(data[, 8, drop = F]), big.mark = ",")) 
         })
         output$cpm_text <- renderText({ 
                 data <- df()
@@ -120,7 +128,7 @@ shinyServer(function(input, output, session) {
         })
         output$ctr_text <- renderText({ 
                 data <- df()
-                paste("Average CTR:", round((colSums(data[, 7, drop = F]) / nrow(df()) * 100), 2), "%") 
+                paste("Average CTR:", round((colSums(data[, 7, drop = F]) / nrow(df()) * 100), 2), "%")
         })
         output$cpa_text <- renderText({ 
                 data <- df()
@@ -128,6 +136,6 @@ shinyServer(function(input, output, session) {
         })
         output$cr_text <- renderText({ 
                 data <- df()
-                paste("Average CR:", round((colSums(data[, 10, drop = F]) / nrow(df()) * 100), 2), "%") 
+                paste("Average CR:", round((colSums(data[, 10, drop = F]) / nrow(df()) * 100), 2), "%")
         })
 })

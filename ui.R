@@ -1,7 +1,5 @@
 # ui.R
 
-myData = tbl_df(read.csv("test.csv"))
-
 shinyUI(fluidPage(theme = "bootstrap.css",
         
         titlePanel("Visualization Tool"),
@@ -23,7 +21,8 @@ shinyUI(fluidPage(theme = "bootstrap.css",
                                              "Bid Type" = "Bid.Type",
                                              "Gender" = "Gender",
                                              "Placement" = "Placement"), selected = "Age"),
-                               dateRangeInput("dates", label = "Date Range"),
+                               dateRangeInput("dates", label = "Date Range", start = "2015-01-01",
+                                              format = "mm/dd/yyyy"),
                                sliderInput("spend", label = "Spend", 
                                            min = 0, max = 250, value = c(0, 50), step = .5),
                                sliderInput("cpm", label = "CPM", 

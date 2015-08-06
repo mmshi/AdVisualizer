@@ -1,8 +1,12 @@
 # ui.R
 
+library(ggvis)
+
+tags$title("Ad Visualizer")
+
 shinyUI(fluidPage(theme = "bootstrap.css",
-        
-        titlePanel("Visualization Tool"),
+                  
+        titlePanel("Ad Visualizer"),
         
         fluidRow(
                 column(3,

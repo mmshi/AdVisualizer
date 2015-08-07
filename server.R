@@ -32,15 +32,41 @@ shinyServer(function(input, output, session) {
                 )
         })
         
+        varlist = function(x) {
+                x = str_c('^(',paste(x, collapse='|'),')$')
+                str_replace_all(x,'\\.','\\\\.')
+        }
+        
        # lol cpm
         ad_tooltip <- function(x) {
-               if (is.null(x))
-                       return(NULL)
-               if (is.null(x$CPM))
-                       return(NULL)
                myData <- isolate(df())
-               ad <- myData[myData$CPM == x$CPM, ]
                
+               ad <- myData
+               
+               if (!is.null(x$Age)) 
+                       ad <- ad %>% filter(Age == x$Age)
+               if (!is.null(x$Bid.Type))
+                       ad <- ad %>% filter(Bid.Type == x$Bid.Type)
+               if (!is.null(x$Gender))
+                       ad <- ad %>% filter(Gender == x$Gender)
+               if (!is.null(x$Placement))
+                       ad <- ad %>% filter(Placement == x$Placement)
+
+               if (!is.null(x$CPM))
+                       ad <- ad %>% filter(CPM == x$CPM)
+               if (!is.null(x$CPC))
+                       ad <- ad %>% filter(CPC == x$CPC)
+               if (!is.null(x$CTR))
+                       ad <- ad %>% filter(CTR == x$CTR)
+               if (!is.null(x$CPA))
+                       ad <- ad %>% filter(CPA == x$CPA)
+               if (!is.null(x$CR))
+                       ad <- ad %>% filter(CR == x$CR)
+               if (!is.null(x$Spend))
+                       ad <- ad %>% filter(Spend == x$Spend)
+               if (!is.null(x$Date))
+                       ad <- ad %>% filter(Date == x$Date)
+
                paste0(ad$Targeting, "<br>",
                       ad$Age, " ", ad$Gender, "<br>",
                       ad$Image, ", ", ad$Copy)
@@ -76,24 +102,28 @@ shinyServer(function(input, output, session) {
                 # Labels for axes
                 xvar_name <- names(axis_vars)[axis_vars == input$xvar]
                 yvar_name <- names(axis_vars)[axis_vars == input$yvar]
-                # legend_name <- names(legend_vars)[legend_vars == input$legend]
-                
+
                 xvar <- prop("x", as.symbol(input$xvar))
                 yvar <- prop("y", as.symbol(input$yvar))
-                # legend <- prop("l", as.symbol(input$legend))
-                
-                # l = input$legend
-                # df <- getMyData()
-                # df <- myFilter(df)
-                df %>% 
-                        ggvis(x = xvar, y = yvar, 
-                              fill =~ Placement) %>%
+
+                if (input$legend == "Age")
+                        df <- df %>% ggvis(x = xvar, y = yvar, 
+                                            fill =~ Age)
+                if (input$legend == "Bid.Type")
+                        df <- df %>%  ggvis(x = xvar, y = yvar, 
+                                        fill =~ Bid.Type) 
+                if (input$legend == "Gender")
+                        df <- df %>%  ggvis(x = xvar, y = yvar, 
+                                            fill =~ Gender) 
+                if (input$legend == "Placement")
+                        df <- df %>%  ggvis(x = xvar, y = yvar, 
+                                            fill =~ Placement) 
+                df <- df %>%
                         layer_points(size := 45, size.hover := 200,
                                      fillOpacity := 0.5, fillOpacity.hover := 0.75) %>%
                         add_tooltip(ad_tooltip, "hover") %>%
                         add_axis("x", title = xvar_name) %>%
                         add_axis("y", title = yvar_name) %>%
-                        # add_legend("l", title = legend_name) %>%
                         set_options(width = 600, height = 500)
         })
         

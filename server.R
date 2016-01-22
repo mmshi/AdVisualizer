@@ -17,8 +17,8 @@ shinyServer(function(input, output, session) {
         
         #return data frame of filtered ads
         df <- reactive({
-                startDate = yday(ymd(as.character(input$dates[1])))
-                endDate = yday(ymd(as.character(input$dates[2])))
+                #startDate = yday(ymd(as.character(input$dates[1])))
+                #endDate = yday(ymd(as.character(input$dates[2])))
                 getMyData() %>%
                 filter(
                         Spend >= input$spend[1] & Spend <= input$spend[2],
@@ -26,9 +26,9 @@ shinyServer(function(input, output, session) {
                         CPC >= input$cpc[1] & CPC <= input$cpc[2],
                         CTR >= input$ctr[1] & CTR <= input$ctr[2],
                         CPA >= input$cpa[1] & CPA <= input$cpa[2],
-                        CR >= input$cr[1] & CR <= input$cr[2],
-                        yday(mdy(as.character(Date))) >= startDate & 
-                                yday(mdy(as.character(Date))) <= endDate
+                        CR >= input$cr[1] & CR <= input$cr[2]
+                        #yday(mdy(as.character(Date))) >= startDate & 
+                                #yday(mdy(as.character(Date))) <= endDate
                 )
         })
         
@@ -64,8 +64,8 @@ shinyServer(function(input, output, session) {
                        ad <- ad %>% filter(CR == x$CR)
                if (!is.null(x$Spend))
                        ad <- ad %>% filter(Spend == x$Spend)
-               if (!is.null(x$Date))
-                       ad <- ad %>% filter(Date == x$Date)
+               #if (!is.null(x$Date))
+               #        ad <- ad %>% filter(Date == x$Date)
 
                paste0(ad$Targeting, "<br>",
                       ad$Age, " ", ad$Gender, "<br>",
@@ -83,8 +83,8 @@ shinyServer(function(input, output, session) {
                         df <- df
                 }
                 
-                startDate = yday(ymd(as.character(input$dates[1])))
-                endDate = yday(ymd(as.character(input$dates[2])))
+                #startDate = yday(ymd(as.character(input$dates[1])))
+                #endDate = yday(ymd(as.character(input$dates[2])))
                 
                 # update graph
                 df <- df %>%
@@ -94,9 +94,9 @@ shinyServer(function(input, output, session) {
                         CPC >= input$cpc[1] & CPC <= input$cpc[2],
                         CTR >= input$ctr[1] & CTR <= input$ctr[2],
                         CPA >= input$cpa[1] & CPA <= input$cpa[2],
-                        CR >= input$cr[1] & CR <= input$cr[2],
-                        yday(mdy(as.character(Date))) >= startDate & 
-                                yday(mdy(as.character(Date))) <= endDate
+                        CR >= input$cr[1] & CR <= input$cr[2]
+                        #yday(mdy(as.character(Date))) >= startDate & 
+                        #        yday(mdy(as.character(Date))) <= endDate
                 )
                 
                 # Labels for axes
